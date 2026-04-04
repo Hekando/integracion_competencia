@@ -50,4 +50,4 @@ public class MantenimientoController {
 
         System.out.println("✅ Registro OK");
     }
-
+}

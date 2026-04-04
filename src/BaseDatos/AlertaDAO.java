@@ -11,7 +11,7 @@ public class AlertaDAO {
     public void insertar(Alerta alerta) {
         String sql = "INSERT INTO alerta (id_camion, kilometraje, fecha, estado) VALUES (?, ?, ?, ?)";
 
-        try (Connection con = ConexionDB.getConexion();
+        try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, alerta.getIdCamion());
@@ -29,7 +29,7 @@ public class AlertaDAO {
     public boolean existeAlertaActiva(int idCamion) {
         String sql = "SELECT * FROM alerta WHERE id_camion = ? AND estado = 'Pendiente'";
 
-        try (Connection con = ConexionDB.getConexion();
+        try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idCamion);
@@ -47,7 +47,7 @@ public class AlertaDAO {
         List<Alerta> lista = new ArrayList<>();
         String sql = "SELECT * FROM alerta";
 
-        try (Connection con = ConexionDB.getConexion();
+        try (Connection con = ConexionBD.getConexion();
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 
@@ -71,7 +71,7 @@ public class AlertaDAO {
     public void actualizarEstado(int idAlerta, String estado) {
         String sql = "UPDATE alerta SET estado = ? WHERE id = ?";
 
-        try (Connection con = ConexionDB.getConexion();
+        try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, estado);

@@ -12,7 +12,7 @@ public class MantenimientoDAO {
 
         String sql = "INSERT INTO mantenimiento (id_camion, fecha, kilometraje, tipo) VALUES (?, ?, ?, ?)";
 
-        try (Connection con = ConexionDB.getConexion();
+        try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, mantenimiento.getIdCamion());
@@ -39,7 +39,7 @@ public class MantenimientoDAO {
         String sql = "SELECT MAX(kilometraje) AS ultimo FROM mantenimiento WHERE id_camion = ?";
         int ultimo = 0;
 
-        try (Connection con = ConexionDB.getConexion();
+        try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idCamion);
@@ -61,7 +61,7 @@ public class MantenimientoDAO {
         List<Mantenimiento> lista = new ArrayList<>();
         String sql = "SELECT * FROM mantenimiento WHERE id_camion = ?";
 
-        try (Connection con = ConexionDB.getConexion();
+        try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idCamion);

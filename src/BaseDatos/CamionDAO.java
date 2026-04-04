@@ -11,7 +11,7 @@ public class CamionDAO {
     public void insertar(Camion camion) {
         String sql = "INSERT INTO camion (patente, modelo, kilometraje_actual) VALUES (?, ?, ?)";
 
-        try (Connection con = ConexionDB.getConexion();
+        try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, camion.getPatente());
@@ -29,7 +29,7 @@ public class CamionDAO {
         String sql = "SELECT * FROM camion WHERE id = ?";
         Camion camion = null;
 
-        try (Connection con = ConexionDB.getConexion();
+        try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, id);
@@ -50,11 +50,44 @@ public class CamionDAO {
         return camion;
     }
 
+    public Camion buscarPorPatente(String patente) {
+        String sql = "SELECT * FROM camion WHERE patente = ?";
+        Camion camion = null;
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, patente);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                camion = new Camion();
+                camion.setId(rs.getInt("id"));
+                camion.setPatente(rs.getString("patente"));
+                camion.setModelo(rs.getString("modelo"));
+                camion.setKilometrajeActual(rs.getInt("kilometraje_actual"));
+            }
+        } catch (Exception e) {
+            System.out.println("❌ Error al buscar camión por patente: " + e.getMessage());
+        }
+        return camion;
+    }
+
+    public void actualizarKilometraje(int id, int nuevoKm) {
+        String sql = "UPDATE camion SET kilometraje_actual = ? WHERE id = ?";
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, nuevoKm);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("❌ Error al actualizar kilometraje: " + e.getMessage());
+        }
+    }
+
+
     public List<Camion> listar() {
         List<Camion> lista = new ArrayList<>();
         String sql = "SELECT * FROM camion";
 
-        try (Connection con = ConexionDB.getConexion();
+        try (Connection con = ConexionBD.getConexion();
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 
@@ -73,3 +106,4 @@ public class CamionDAO {
 
         return lista;
     }
+}
