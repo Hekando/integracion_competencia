@@ -1,53 +1,31 @@
 package Controlador;
 
-import BaseDatos.*;
-import Modelo.Camion;
-import Modelo.Alerta;
+import BaseDatos.ConexionBD;
+import Modelo.Mantenimiento;
 
-import java.time.LocalDate;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Date;
 
 public class MantenimientoController {
 
-    private CamionDAO camionDAO = new CamionDAO();
-    private MantenimientoDAO mantenimientoDAO = new MantenimientoDAO();
-    private AlertaDAO alertaDAO = new AlertaDAO();
+    public void insertarMantenimiento(Mantenimiento m) {
 
-    public void registrarKilometraje(int idCamion, int kmActual) {
+        String sql = "INSERT INTO mantenimientos (id_camion, fecha, tipo_mantenimiento) VALUES (?, ?, ?)";
 
-        Camion camion = camionDAO.buscarPorId(idCamion);
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-        if (camion == null) {
-            System.out.println("❌ Camión no existe");
-            return;
+            ps.setInt(1, m.getIdCamion());
+            ps.setDate(2, Date.valueOf(m.getFecha()));
+            ps.setString(3, m.getTipoMantenimiento());
+
+            ps.executeUpdate();
+
+            System.out.println("🔧 Mantenimiento guardado");
+
+        } catch (Exception e) {
+            System.out.println("❌ Error: " + e.getMessage());
         }
-
-        // 🔥 CAMBIO IMPORTANTE
-        if (kmActual < camion.getKilometraje()) {
-            System.out.println("❌ KM inválido");
-            return;
-        }
-
-        camionDAO.actualizarKilometraje(idCamion, kmActual);
-
-        int ultimo = mantenimientoDAO.obtenerUltimoKilometraje(idCamion);
-        int diferencia = kmActual - ultimo;
-
-        if (diferencia >= 5000) {
-
-            if (!alertaDAO.existeAlertaActiva(idCamion)) {
-
-                Alerta alerta = new Alerta();
-                alerta.setIdCamion(idCamion);
-                alerta.setKilometraje(kmActual);
-                alerta.setFecha(LocalDate.now());
-                alerta.setEstado("Pendiente");
-
-                alertaDAO.insertar(alerta);
-
-                System.out.println("⚠ ALERTA GENERADA");
-            }
-        }
-
-        System.out.println("✅ Registro OK");
     }
-
+}

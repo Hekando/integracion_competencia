@@ -1,55 +1,32 @@
 package Controlador;
 
-import BaseDatos.*;
-import Modelo.*;
+import BaseDatos.ConexionBD;
+import Modelo.Camion;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 public class CamionController {
 
-    CamionDAO dao = new CamionDAO();
-    AlertaDAO alertaDAO = new AlertaDAO();
+    public void insertarCamion(Camion camion) {
 
-    public void agregarCamion(String patente, String marca, String modelo, int anio, int km) {
+        String sql = "INSERT INTO camiones (marca, modelo, anio, kilometraje, estado_mantenimiento) VALUES (?, ?, ?, ?, ?)";
 
-        Camion c = new Camion();
-        c.setPatente(patente);
-        c.setMarca(marca);
-        c.setModelo(modelo);
-        c.setAnio(anio);
-        c.setKilometraje(km);
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-        dao.insertar(c);
-    }
+            ps.setString(1, camion.getMarca());
+            ps.setString(2, camion.getModelo());
+            ps.setInt(3, camion.getAnio());
+            ps.setInt(4, camion.getKilometraje());
+            ps.setString(5, camion.getEstadoMantenimiento());
 
-    public Camion buscarPorPatente(String patente) {
-        return dao.buscarPorPatente(patente);
-    }
+            ps.executeUpdate();
 
-    public void actualizarKmPorPatente(String patente, int nuevoKm) {
+            System.out.println("✅ Camión guardado");
 
-        Camion c = dao.buscarPorPatente(patente);
-
-        if (c == null) {
-            System.out.println("Camión no existe");
-            return;
-        }
-
-        int actual = c.getKilometraje();
-
-        if (nuevoKm <= actual) {
-            System.out.println("KM debe ser mayor");
-            return;
-        }
-
-        int diferencia = nuevoKm - actual;
-
-        dao.actualizarKilometraje(c.getId(), nuevoKm);
-
-        if (diferencia >= 10000) {
-            Alerta a = new Alerta();
-            a.setCamionId(c.getId());
-            a.setMensaje("Camión " + patente + " requiere mantenimiento");
-
-            alertaDAO.insertar(a);
+        } catch (Exception e) {
+            System.out.println("❌ Error: " + e.getMessage());
         }
     }
 }

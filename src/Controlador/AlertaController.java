@@ -1,58 +1,29 @@
 package Controlador;
 
-import BaseDatos.AlertaDAO;
+import BaseDatos.ConexionBD;
 import Modelo.Alerta;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 public class AlertaController {
 
-    private AlertaDAO alertaDAO = new AlertaDAO();
+    public void insertarAlerta(Alerta alerta) {
 
-    // Crear alerta manual (opcional)
-    public void crearAlerta(int idCamion, int kilometraje) {
+        String sql = "INSERT INTO alertas (id_camion, mensaje) VALUES (?, ?)";
 
-        if (kilometraje <= 0) {
-            System.out.println("❌ Kilometraje inválido");
-            return;
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, alerta.getIdCamion());
+            ps.setString(2, alerta.getMensaje());
+
+            ps.executeUpdate();
+
+            System.out.println("⚠️ Alerta guardada");
+
+        } catch (Exception e) {
+            System.out.println("❌ Error: " + e.getMessage());
         }
-
-        // Evitar duplicados
-        if (alertaDAO.existeAlertaActiva(idCamion)) {
-            System.out.println("ℹ Ya existe una alerta activa");
-            return;
-        }
-
-        Alerta alerta = new Alerta();
-        alerta.setIdCamion(idCamion);
-        alerta.setKilometraje(kilometraje);
-        alerta.setFecha(LocalDate.now());
-        alerta.setEstado("Pendiente");
-
-        alertaDAO.insertar(alerta);
-
-        System.out.println("⚠ Alerta creada correctamente");
-    }
-
-    // Listar alertas
-    public void listarAlertas() {
-        List<Alerta> lista = alertaDAO.listar();
-
-        for (Alerta a : lista) {
-            System.out.println("ID: " + a.getId() +
-                    " | Camión: " + a.getIdCamion() +
-                    " | KM: " + a.getKilometraje() +
-                    " | Fecha: " + a.getFecha() +
-                    " | Estado: " + a.getEstado());
-        }
-    }
-
-    // Marcar alerta como realizada
-    public void cerrarAlerta(int idAlerta) {
-
-        alertaDAO.actualizarEstado(idAlerta, "Realizada");
-
-        System.out.println("✅ Alerta cerrada");
     }
 }
