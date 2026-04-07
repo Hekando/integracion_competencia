@@ -1,41 +1,30 @@
 package Controlador;
 
-import BaseDatos.ConductorDAO;
+import BaseDatos.ConexionBD;
 import Modelo.Conductor;
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 public class ConductorController {
 
-    private ConductorDAO conductorDAO = new ConductorDAO();
+    public void insertarConductor(Conductor conductor) {
 
-    // Crear conductor
-    public void crearConductor(String nombre, String licencia, int idCamion) {
+        String sql = "INSERT INTO conductores (nombre, direccion, contacto) VALUES (?, ?, ?)";
 
-        if (nombre == null || nombre.isEmpty()) {
-            System.out.println("❌ El nombre es obligatorio");
-            return;
-        }
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-        Conductor conductor = new Conductor();
-        conductor.setNombre(nombre);
-        conductor.setLicencia(licencia);
-        conductor.setIdCamion(idCamion);
+            ps.setString(1, conductor.getNombre());
+            ps.setString(2, conductor.getDireccion());
+            ps.setString(3, conductor.getContacto());
 
-        conductorDAO.insertar(conductor);
+            ps.executeUpdate();
 
-        System.out.println("✅ Conductor registrado correctamente");
-    }
+            System.out.println("✅ Conductor guardado");
 
-    // Listar conductores
-    public void listarConductores() {
-        List<Conductor> lista = conductorDAO.listar();
-
-        for (Conductor c : lista) {
-            System.out.println("ID: " + c.getId() +
-                    " | Nombre: " + c.getNombre() +
-                    " | Licencia: " + c.getLicencia() +
-                    " | Camión ID: " + c.getIdCamion());
+        } catch (Exception e) {
+            System.out.println("❌ Error: " + e.getMessage());
         }
     }
 }
