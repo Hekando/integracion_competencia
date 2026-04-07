@@ -1,5 +1,7 @@
 package Modelo;
 
+import java.util.List;
+
 public class Camion {
 
     private int id;
@@ -8,6 +10,7 @@ public class Camion {
     private String modelo;
     private int anio;
     private int kilometraje;
+    private List<Mantenimiento> mantenimientos;
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -28,7 +31,9 @@ public class Camion {
     public void setKilometraje(int kilometraje) { this.kilometraje = kilometraje; }
 
     public int getKilometrajeActual() { return 0; }
-    public void setKilometrajeActual(int kilometrajeActual) {
+    public void setKilometrajeActual(int kilometrajeActual) { }
 
-    }
+    public List<Mantenimiento> getMantenimientos() { return mantenimientos; }
+    public void setMantenimientos(List<Mantenimiento> mantenimientos) { this.mantenimientos = mantenimientos; }
+
 }
