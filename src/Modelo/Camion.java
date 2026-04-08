@@ -1,16 +1,22 @@
 package Modelo;
 
+import java.util.List;
+
 public class Camion {
 
-    private int idCamion;
+    private int id;
+    private String patente;
     private String marca;
     private String modelo;
     private int anio;
     private int kilometraje;
-    private String estadoMantenimiento;
+    private List<Mantenimiento> mantenimientos;
 
-    public int getIdCamion() { return idCamion; }
-    public void setIdCamion(int idCamion) { this.idCamion = idCamion; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getPatente() { return patente; }
+    public void setPatente(String patente) { this.patente = patente; }
 
     public String getMarca() { return marca; }
     public void setMarca(String marca) { this.marca = marca; }
@@ -24,6 +30,10 @@ public class Camion {
     public int getKilometraje() { return kilometraje; }
     public void setKilometraje(int kilometraje) { this.kilometraje = kilometraje; }
 
-    public String getEstadoMantenimiento() { return estadoMantenimiento; }
-    public void setEstadoMantenimiento(String estadoMantenimiento) { this.estadoMantenimiento = estadoMantenimiento; }
+    public int getKilometrajeActual() { return 0; }
+    public void setKilometrajeActual(int kilometrajeActual) { }
+
+    public List<Mantenimiento> getMantenimientos() { return mantenimientos; }
+    public void setMantenimientos(List<Mantenimiento> mantenimientos) { this.mantenimientos = mantenimientos; }
+
 }
