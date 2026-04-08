@@ -1,32 +1,52 @@
 package Controlador;
 
-import BaseDatos.ConexionBD;
+import BaseDatos.CamionDAO;
+import BaseDatos.AlertaDAO;
 import Modelo.Camion;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import Modelo.Alerta;
 
 public class CamionController {
 
-    public void insertarCamion(Camion camion) {
+    private CamionDAO camionDAO;
+    private AlertaDAO alertaDAO;
 
-        String sql = "INSERT INTO camiones (marca, modelo, anio, kilometraje, estado_mantenimiento) VALUES (?, ?, ?, ?, ?)";
+    public CamionController() {
+        camionDAO = new CamionDAO();
+        alertaDAO = new AlertaDAO();
+    }
 
-        try (Connection con = ConexionBD.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+    // 🚛 Registrar kilometraje (SUMA y valida alerta)
+    public String registrarKilometraje(String modelo, int kilometrajeIngresado) {
 
-            ps.setString(1, camion.getMarca());
-            ps.setString(2, camion.getModelo());
-            ps.setInt(3, camion.getAnio());
-            ps.setInt(4, camion.getKilometraje());
-            ps.setString(5, camion.getEstadoMantenimiento());
+        // 🔍 Buscar camión
+        Camion camion = camionDAO.buscarPorModelo(modelo);
 
-            ps.executeUpdate();
-
-            System.out.println("✅ Camión guardado");
-
-        } catch (Exception e) {
-            System.out.println("❌ Error: " + e.getMessage());
+        if (camion == null) {
+            return "Camión no encontrado";
         }
+
+        // 🔄 Actualizar KM (SUMANDO)
+        int nuevoKM = camionDAO.actualizarKilometraje(
+                camion.getIdCamion(),
+                kilometrajeIngresado
+        );
+
+        if (nuevoKM == -1) {
+            return "Error al actualizar kilometraje";
+        }
+
+        // 🔔 Generar alerta si supera 5000 KM (TOTAL)
+        if (nuevoKM >= 5000) {
+
+            Alerta alerta = new Alerta();
+            alerta.setIdCamion(camion.getIdCamion());
+            alerta.setMensaje("Mantención requerida");
+
+            alertaDAO.insertar(alerta);
+
+            return "⚠ Mantención requerida (KM total: " + nuevoKM + ")";
+        }
+
+        return "✅ Kilometraje actualizado (KM total: " + nuevoKM + ")";
     }
 }

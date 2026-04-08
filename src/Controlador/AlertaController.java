@@ -1,29 +1,23 @@
 package Controlador;
 
-import BaseDatos.ConexionBD;
+import BaseDatos.AlertaDAO;
 import Modelo.Alerta;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 
 public class AlertaController {
 
-    public void insertarAlerta(Alerta alerta) {
+    private AlertaDAO alertaDAO;
 
-        String sql = "INSERT INTO alertas (id_camion, mensaje) VALUES (?, ?)";
+    public AlertaController() {
+        alertaDAO = new AlertaDAO();
+    }
 
-        try (Connection con = ConexionBD.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+    // 🔔 Crear alerta manual
+    public void crearAlerta(int idCamion, String mensaje) {
 
-            ps.setInt(1, alerta.getIdCamion());
-            ps.setString(2, alerta.getMensaje());
+        Alerta alerta = new Alerta();
+        alerta.setIdCamion(idCamion);
+        alerta.setMensaje(mensaje);
 
-            ps.executeUpdate();
-
-            System.out.println("⚠️ Alerta guardada");
-
-        } catch (Exception e) {
-            System.out.println("❌ Error: " + e.getMessage());
-        }
+        alertaDAO.insertar(alerta);
     }
 }
