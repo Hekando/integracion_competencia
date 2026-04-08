@@ -18,7 +18,7 @@ public class MantenimientoController {
 
             ps.setInt(1, m.getIdCamion());
             ps.setDate(2, Date.valueOf(m.getFecha()));
-            ps.setString(3, m.getTipoMantenimiento());
+            ps.setString(3, m.getTipo());
 
             ps.executeUpdate();
 

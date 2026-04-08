@@ -2,59 +2,80 @@ package BaseDatos;
 
 import Modelo.Camion;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CamionDAO {
 
-    public void insertar(Camion camion) {
+    private Connection conexion;
 
-        String sql = "INSERT INTO camiones (marca, modelo, anio, kilometraje, estado_mantenimiento) VALUES (?, ?, ?, ?, ?)";
-
-        try (Connection con = ConexionBD.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, camion.getMarca());
-            ps.setString(2, camion.getModelo());
-            ps.setInt(3, camion.getAnio());
-            ps.setInt(4, camion.getKilometraje());
-            ps.setString(5, camion.getEstadoMantenimiento());
-
-            ps.executeUpdate();
-
-            System.out.println("✅ Camión guardado");
-
-        } catch (Exception e) {
-            System.out.println("❌ Error: " + e.getMessage());
+    public CamionDAO() {
+        try {
+            this.conexion = ConexionBD.getConexion();
+        } catch (SQLException e) {
+            System.out.println("Error al conectar con la BD");
+            e.printStackTrace();
         }
     }
 
-    public List<Camion> listar() {
+    // 🔍 Buscar camión por modelo
+    public Camion buscarPorModelo(String modelo) {
 
-        List<Camion> lista = new ArrayList<>();
-        String sql = "SELECT * FROM camiones";
+        Camion camion = null;
+        String sql = "SELECT * FROM camion WHERE modelo = ?";
 
-        try (Connection con = ConexionBD.getConexion();
-             Statement st = con.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+        try {
+            PreparedStatement stmt = conexion.prepareStatement(sql);
+            stmt.setString(1, modelo);
 
-            while (rs.next()) {
+            ResultSet rs = stmt.executeQuery();
 
-                Camion c = new Camion();
-                c.setIdCamion(rs.getInt("id_camion"));
-                c.setMarca(rs.getString("marca"));
-                c.setModelo(rs.getString("modelo"));
-                c.setAnio(rs.getInt("anio"));
-                c.setKilometraje(rs.getInt("kilometraje"));
-                c.setEstadoMantenimiento(rs.getString("estado_mantenimiento"));
-
-                lista.add(c);
+            if (rs.next()) {
+                camion = new Camion();
+                camion.setIdCamion(rs.getInt("id_camion"));
+                camion.setMarca(rs.getString("marca"));
+                camion.setModelo(rs.getString("modelo"));
+                camion.setAnio(rs.getInt("anio"));
+                camion.setKilometraje(rs.getInt("kilometraje"));
+                camion.setEstadoMantenimiento(rs.getString("estado_mantenimiento"));
             }
 
-        } catch (Exception e) {
-            System.out.println("❌ Error al listar: " + e.getMessage());
+        } catch (SQLException e) {
+            System.out.println("Error al buscar camión");
+            e.printStackTrace();
         }
 
-        return lista;
+        return camion;
+    }
+
+    // Actualizar kilometraje SUMANDO
+    public int actualizarKilometraje(int idCamion, int kmIngresado) {
+
+        String sqlSelect = "SELECT kilometraje FROM camion WHERE id_camion = ?";
+        String sqlUpdate = "UPDATE camion SET kilometraje = ? WHERE id_camion = ?";
+
+        try {
+            PreparedStatement stmtSelect = conexion.prepareStatement(sqlSelect);
+            stmtSelect.setInt(1, idCamion);
+
+            ResultSet rs = stmtSelect.executeQuery();
+
+            if (rs.next()) {
+                int kmActual = rs.getInt("kilometraje");
+
+                int nuevoKM = kmActual + kmIngresado;
+
+                PreparedStatement stmtUpdate = conexion.prepareStatement(sqlUpdate);
+                stmtUpdate.setInt(1, nuevoKM);
+                stmtUpdate.setInt(2, idCamion);
+
+                stmtUpdate.executeUpdate();
+
+                return nuevoKM; // IMPORTANTEE
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return -1;
     }
 }

@@ -7,7 +7,8 @@ public class Mantenimiento {
     private int id;
     private int idCamion;
     private LocalDate fecha;
-    private String tipoMantenimiento;
+    private int kilometraje;
+    private String tipo;
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -18,6 +19,9 @@ public class Mantenimiento {
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) { this.fecha = fecha; }
 
-    public String getTipoMantenimiento() { return tipoMantenimiento; }
-    public void setTipoMantenimiento(String tipoMantenimiento) { this.tipoMantenimiento = tipoMantenimiento; }
+    public int getKilometraje() { return kilometraje; }
+    public void setKilometraje(int kilometraje) { this.kilometraje = kilometraje; }
+
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
 }

@@ -1,9 +1,13 @@
 package Modelo;
 
+import java.time.LocalDate;
+
 public class Alerta {
 
     private int id;
     private int idCamion;
+    private int kilometraje;
+    private LocalDate fecha;
     private String mensaje;
 
     public int getId() { return id; }
@@ -11,6 +15,12 @@ public class Alerta {
 
     public int getIdCamion() { return idCamion; }
     public void setIdCamion(int idCamion) { this.idCamion = idCamion; }
+
+    public int getKilometraje() { return kilometraje; }
+    public void setKilometraje(int kilometraje) { this.kilometraje = kilometraje; }
+
+    public LocalDate getFecha() { return fecha; }
+    public void setFecha(LocalDate fecha) { this.fecha = fecha; }
 
     public String getMensaje() { return mensaje; }
     public void setMensaje(String mensaje) { this.mensaje = mensaje; }
