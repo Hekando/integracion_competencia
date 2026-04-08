@@ -9,7 +9,7 @@ import java.util.List;
 public class AlertaDAO {
 
     public void insertar(Alerta alerta) {
-        String sql = "INSERT INTO alerta (id_camion, kilometraje, fecha, estado) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO alerta (id_camion, kilometraje, fecha, mensaje) VALUES (?, ?, ?, ?)";
 
         try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -27,7 +27,7 @@ public class AlertaDAO {
     }
 
     public boolean existeAlertaActiva(int idCamion) {
-        String sql = "SELECT * FROM alerta WHERE id_camion = ? AND estado = 'Pendiente'";
+        String sql = "SELECT * FROM alerta WHERE id_camion = ? AND mensaje = 'Pendiente'";
 
         try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
