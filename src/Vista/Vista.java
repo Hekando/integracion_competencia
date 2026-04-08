@@ -3,14 +3,28 @@ package Vista;
 import javax.swing.*;
 import java.awt.*;
 
+// IMPORTS AGREAO
+import Controlador.CamionController;
+import Controlador.ConductorController;
+import Modelo.Conductor;
+import BaseDatos.ConexionBD;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
 public class Vista {
 
     private JPanel mainPanel;
 
+    // CONTROLLERS
+    private CamionController camionController = new CamionController();
+    private ConductorController conductorController = new ConductorController();
+
     public Vista() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         JFrame ventana = new JFrame("Hirata Transport");
         ventana.setSize(900, 550);
@@ -28,10 +42,15 @@ public class Vista {
         logo.setFont(new Font("Arial", Font.BOLD, 18));
         logo.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
+        //BOTONES
+        JButton btnCamion = crearBotonMenu("Registrar Camión");
+        JButton btnConductor = crearBotonMenu("Registrar Conductor");
         JButton btnKM = crearBotonMenu("Registrar KM");
 
         sidebar.add(logo);
         sidebar.add(Box.createVerticalStrut(20));
+        sidebar.add(btnCamion);
+        sidebar.add(btnConductor);
         sidebar.add(btnKM);
 
         // ⚪ PANEL PRINCIPAL
@@ -48,7 +67,9 @@ public class Vista {
 
         header.add(titulo, BorderLayout.WEST);
 
-        // EVENTO
+        // EVENTOS
+        btnCamion.addActionListener(e -> mostrarPanelCamion());
+        btnConductor.addActionListener(e -> mostrarPanelConductor());
         btnKM.addActionListener(e -> mostrarPanelKilometraje());
 
         ventana.add(header, BorderLayout.NORTH);
@@ -59,7 +80,7 @@ public class Vista {
         ventana.setVisible(true);
     }
 
-    // 🔹 BOTÓN SIDEBAR
+    // BOTÓN SIDEBAR
     private JButton crearBotonMenu(String texto) {
         JButton btn = new JButton(texto);
         btn.setForeground(Color.WHITE);
@@ -82,7 +103,108 @@ public class Vista {
         return btn;
     }
 
-    // 🔥 PANEL KILOMETRAJE
+    // 🚛 REGISTRAR CAMIÓN
+    private void mostrarPanelCamion() {
+
+        mainPanel.removeAll();
+
+        JPanel panel = new JPanel(new GridLayout(6, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(50, 100, 50, 100));
+
+        JTextField txtPatente = new JTextField();
+        JTextField txtMarca = new JTextField();
+        JTextField txtModelo = new JTextField();
+        JTextField txtKM = new JTextField();
+
+        panel.add(new JLabel("Patente:"));
+        panel.add(txtPatente);
+
+        panel.add(new JLabel("Marca:"));
+        panel.add(txtMarca);
+
+        panel.add(new JLabel("Modelo:"));
+        panel.add(txtModelo);
+
+        panel.add(new JLabel("Kilometraje:"));
+        panel.add(txtKM);
+
+        JButton btnGuardar = new JButton("Guardar");
+
+        panel.add(new JLabel(""));
+        panel.add(btnGuardar);
+
+        btnGuardar.addActionListener(e -> {
+            try {
+                Connection con = ConexionBD.getConexion();
+
+                String sql = "INSERT INTO camion (patente, marca, modelo, kilometraje) VALUES (?, ?, ?, ?)";
+                PreparedStatement ps = con.prepareStatement(sql);
+
+                ps.setString(1, txtPatente.getText());
+                ps.setString(2, txtMarca.getText());
+                ps.setString(3, txtModelo.getText());
+                ps.setInt(4, Integer.parseInt(txtKM.getText()));
+
+                ps.executeUpdate();
+
+                JOptionPane.showMessageDialog(null, "✅ Camión guardado");
+
+                // LIMPIAR
+                txtPatente.setText("");
+                txtMarca.setText("");
+                txtModelo.setText("");
+                txtKM.setText("");
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null,
+                        "❌ Error real: " + ex.getMessage());
+            }
+        });
+
+        mainPanel.add(panel);
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
+    // 👤 REGISTRAR CONDUCTOR
+    private void mostrarPanelConductor() {
+
+        mainPanel.removeAll();
+
+        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(50, 100, 50, 100));
+
+        JTextField txtNombre = new JTextField();
+        JTextField txtLicencia = new JTextField();
+
+        panel.add(new JLabel("Nombre:"));
+        panel.add(txtNombre);
+
+        panel.add(new JLabel("Licencia:"));
+        panel.add(txtLicencia);
+
+        JButton btnGuardar = new JButton("Guardar");
+
+        panel.add(new JLabel(""));
+        panel.add(btnGuardar);
+
+        btnGuardar.addActionListener(e -> {
+
+            Conductor c = new Conductor();
+            c.setNombre(txtNombre.getText());
+            c.setLicencia(txtLicencia.getText());
+
+            conductorController.insertarConductor(c);
+
+            JOptionPane.showMessageDialog(null, "✅ Conductor guardado");
+        });
+
+        mainPanel.add(panel);
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
+    // PANEL KILOMETRAJE (ESCRIBIENDO MODELO)
     private void mostrarPanelKilometraje() {
 
         mainPanel.removeAll();
@@ -90,121 +212,68 @@ public class Vista {
         JPanel contenedor = new JPanel(new BorderLayout());
         contenedor.setBackground(new Color(245, 247, 250));
 
-        // 🔹 TÍTULO
         JLabel titulo = new JLabel("Registrar Kilometraje");
         titulo.setFont(new Font("Arial", Font.BOLD, 18));
         titulo.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
 
         contenedor.add(titulo, BorderLayout.NORTH);
 
-        // 🔹 CARD (FORMULARIO)
         JPanel card = new JPanel(new GridBagLayout());
         card.setBackground(Color.WHITE);
-        card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220,220,220)),
-                BorderFactory.createEmptyBorder(20, 40, 20, 40)
-        ));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 10, 15, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // 🔽 COMBO CAMIÓN
-        JComboBox<String> comboCamion = new JComboBox<>();
-        comboCamion.addItem("CAM-001 - Toyota Hilux 2020");
-        comboCamion.addItem("CAM-002 - Toyota Hilux 2023");
-
-        // 🔢 INPUT KM
+        // CAMBIO: ahora escribes el modelo
+        JTextField campoModelo = new JTextField();
         JTextField campoKM = new JTextField();
-        campoKM.setFont(new Font("Arial", Font.PLAIN, 14));
-        campoKM.setBorder(BorderFactory.createLineBorder(new Color(200,200,200)));
 
-        // 🏷 LABELS
         gbc.gridx = 0;
         gbc.gridy = 0;
-        card.add(new JLabel("Seleccionar Camión:"), gbc);
+        card.add(new JLabel("Modelo:"), gbc);
 
         gbc.gridx = 1;
-        card.add(comboCamion, gbc);
+        card.add(campoModelo, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
-        card.add(new JLabel("Kilometraje:"), gbc);
+        card.add(new JLabel("KM:"), gbc);
 
         gbc.gridx = 1;
         card.add(campoKM, gbc);
 
-        // 🔘 BOTÓN
         JButton btnGuardar = new JButton("Guardar");
-        btnGuardar.setBackground(new Color(0, 123, 255));
-        btnGuardar.setForeground(Color.WHITE);
-        btnGuardar.setFont(new Font("Arial", Font.BOLD, 14));
-        btnGuardar.setFocusPainted(false);
-        btnGuardar.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnGuardar.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-
-        btnGuardar.setOpaque(true);
-        btnGuardar.setBorderPainted(false);
 
         gbc.gridx = 1;
         gbc.gridy = 2;
         card.add(btnGuardar, gbc);
 
-        // 🔔 MENSAJE
-        JLabel info = new JLabel("⚠ Se generará alerta al llegar a 5000 km");
-        info.setForeground(new Color(120,120,120));
-        info.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
-
-        // EVENTO BOTÓN
         btnGuardar.addActionListener(e -> {
 
-            String km = campoKM.getText();
-
-            if (km.isEmpty()) {
-                JOptionPane.showMessageDialog(null,
-                        "Debe ingresar kilometraje",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
             try {
-                int valor = Integer.parseInt(km);
+                String modelo = campoModelo.getText(); // scribes tú
+                int km = Integer.parseInt(campoKM.getText());
 
-                if (valor >= 5000) {
-                    JOptionPane.showMessageDialog(null,
-                            "⚠ El camión requiere mantenimiento",
-                            "Alerta",
-                            JOptionPane.WARNING_MESSAGE);
-                }
+                String resultado = camionController.registrarKilometraje(modelo, km);
 
-                JOptionPane.showMessageDialog(null,
-                        "✅ Registro guardado",
-                        "OK",
-                        JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, resultado);
+
+                campoModelo.setText("");
+                campoKM.setText("");
 
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null,
-                        "Kilometraje inválido",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "❌ Error: " + ex.getMessage());
             }
         });
 
-        // CONTENEDOR CENTRAL
         JPanel centro = new JPanel(new GridBagLayout());
-        centro.setBackground(new Color(245, 247, 250));
         centro.add(card);
 
         contenedor.add(centro, BorderLayout.CENTER);
-        contenedor.add(info, BorderLayout.SOUTH);
 
-        mainPanel.add(contenedor, BorderLayout.CENTER);
-
+        mainPanel.add(contenedor);
         mainPanel.revalidate();
         mainPanel.repaint();
     }
 }
-
-
-
