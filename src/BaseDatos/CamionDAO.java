@@ -79,4 +79,26 @@ public class CamionDAO {
         return -1;
     }
 
+    // 🔍 Obtener kilometraje del último mantenimiento
+    public int obtenerKmUltimoMantenimiento(int idCamion) {
+        String sql = "SELECT kilometraje FROM mantenimiento WHERE id_camion = ? ORDER BY fecha DESC LIMIT 1";
+
+        try {
+            PreparedStatement stmt = conexion.prepareStatement(sql);
+            stmt.setInt(1, idCamion);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("kilometraje");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al obtener último mantenimiento");
+            e.printStackTrace();
+        }
+
+        return 0; // Si no hay mantenimientos, retorna 0
+    }
+
 }
