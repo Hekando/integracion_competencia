@@ -9,6 +9,7 @@ public class Alerta {
     private int kilometraje;
     private LocalDate fecha;
     private String mensaje;
+    private String estado;
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -24,4 +25,7 @@ public class Alerta {
 
     public String getMensaje() { return mensaje; }
     public void setMensaje(String mensaje) { this.mensaje = mensaje; }
+
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
 }

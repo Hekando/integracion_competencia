@@ -35,18 +35,36 @@ public class CamionController {
             return "Error al actualizar kilometraje";
         }
 
-        // 🔔 Generar alerta si supera 5000 KM (TOTAL)
-        if (nuevoKM >= 5000) {
+        // 🔍 Consultar último mantenimiento
+        int kmUltimoMantenimiento = camionDAO.obtenerKmUltimoMantenimiento(camion.getIdCamion());
 
-            Alerta alerta = new Alerta();
-            alerta.setIdCamion(camion.getIdCamion());
-            alerta.setMensaje("Mantención requerida");
+        // 📊 Calcular diferencia
+        int diferencia = nuevoKM - kmUltimoMantenimiento;
 
-            alertaDAO.insertar(alerta);
+        // 🔔 Generar alerta si la diferencia es >= 5000 KM
+        if (diferencia >= 5000) {
 
-            return "⚠ Mantención requerida (KM total: " + nuevoKM + ")";
+            // Verificar si ya existe una alerta pendiente
+            if (!alertaDAO.existeAlertaActiva(camion.getIdCamion())) {
+
+                Alerta alerta = new Alerta();
+                alerta.setIdCamion(camion.getIdCamion());
+                alerta.setKilometraje(nuevoKM);
+                alerta.setFecha(java.time.LocalDate.now());
+                alerta.setEstado("Pendiente");
+
+                alertaDAO.insertar(alerta);
+
+                return "⚠ ¡ALERTA GENERADA! Mantención requerida.\n" +
+                       "KM actual: " + nuevoKM + "\n" +
+                       "KM último mantenimiento: " + kmUltimoMantenimiento + "\n" +
+                       "Diferencia: " + diferencia + " km";
+            } else {
+                return "⚠ Kilometraje actualizado (KM: " + nuevoKM + ")\n" +
+                       "Ya existe una alerta pendiente para este camión.";
+            }
         }
 
-        return "✅ Kilometraje actualizado (KM total: " + nuevoKM + ")";
+        return "✅ Kilometraje actualizado correctamente (KM total: " + nuevoKM + ")";
     }
 }
