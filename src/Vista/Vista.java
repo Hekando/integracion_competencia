@@ -874,7 +874,7 @@ public class Vista {
 
                 registroController.registrar(r);
 
-                if (resultado.toLowerCase().contains("alerta")) {
+                if (resultado.toLowerCase().contains("alerta!")) {
                     lblAlerta.setText("⚠️ " + resultado);
                     lblAlerta.setForeground(new Color(180, 80, 60));
                 } else {
