@@ -1,18 +1,32 @@
 package Prueba;
-import Modelo.Conductor;
+
 import Controlador.ConductorController;
+import Modelo.Camion;
+import Modelo.Conductor;
+
 public class Prueba {
     public static void main(String[] args) {
-
         System.out.println("INICIANDO PRUEBA...");
 
-        Conductor c = new Conductor();
-        c.setNombre("Nicol");
-        c.setLicencia("ABC123");
+        Camion camion = new Camion();
+        camion.setPatente("PRUEBA-123");
+        camion.setMarca("Toyota");
+        camion.setModelo("2027");
+        camion.setKilometraje(100);
+
+        Conductor conductor = new Conductor();
+        conductor.setNombre("Nicol");
+        conductor.setLicencia("ABC123");
+        conductor.setUsuario("nicol_prueba");
+        conductor.setPassword("12345");
 
         ConductorController controller = new ConductorController();
-        controller.insertarConductor(c);
 
-        System.out.println("✅ FIN PRUEBA");
+        try {
+            controller.registrarConductorConCamion(conductor, camion);
+            System.out.println("PRUEBA FINALIZADA");
+        } catch (Exception e) {
+            System.out.println("ERROR EN PRUEBA: " + e.getMessage());
+        }
     }
 }

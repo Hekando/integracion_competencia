@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import Controlador.LoginController;
 
 public class Login extends JFrame {
+    private static final long serialVersionUID = 1L;
 
     private JTextField txtUsuario;
     private JPasswordField txtPassword;
@@ -111,7 +112,11 @@ public class Login extends JFrame {
                     "✅ ¡Bienvenido/a!\nUsuario: " + usuario + "\nRol: " + rol,
                     "Login exitoso", JOptionPane.INFORMATION_MESSAGE);
             this.dispose();
-            new Vista(); // Abrir dashboard principal
+            if ("Camionero".equals(rol)) {
+                new VistaCamionero(usuario, rol);
+            } else {
+                new Vista(usuario, rol); // Abrir dashboard principal segun rol autenticado
+            }
         } else {
             JOptionPane.showMessageDialog(this,
                     "❌ Credenciales incorrectas",
