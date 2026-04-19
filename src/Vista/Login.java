@@ -61,7 +61,7 @@ public class Login extends JFrame {
         txtPassword.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         txtPassword.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
 
-        String[] roles = {"Administrador", "Camionero"};
+        String[] roles = {"Administrador de flota", "Administrador de mantencion", "Camionero"};
         comboRol = new JComboBox<>(roles);
         comboRol.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
 
