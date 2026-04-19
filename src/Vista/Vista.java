@@ -13,12 +13,17 @@ import BaseDatos.ConexionBD;
 import Controlador.CamionController;
 import Controlador.ConductorController;
 import Controlador.MantenimientoController;
+import Modelo.Camion;
 import Modelo.Conductor;
 import Modelo.Mantenimiento;
+import Modelo.RegistroConductorCamion;
 
 public class Vista {
 
     private JPanel mainPanel;
+    private final JFrame ventana;
+    private final String usuario;
+    private final String rol;
 
     // CONTROLLERS
     private CamionController camionController = new CamionController();
@@ -26,13 +31,16 @@ public class Vista {
     private MantenimientoController mantenimientoController = new MantenimientoController();
     private RegistroKilometrajeController registroController = new RegistroKilometrajeController();
 
-    public Vista() {
+    public Vista(String usuario, String rol) {
+        this.usuario = usuario;
+        this.rol = rol;
+
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
         }
 
-        JFrame ventana = new JFrame("Hirata Transport");
+        ventana = new JFrame("Hirata Transport");
         ventana.setSize(900, 550);
         ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ventana.setLayout(new BorderLayout());
@@ -71,14 +79,25 @@ public class Vista {
 
         JLabel titulo = new JLabel("Dashboard");
         titulo.setFont(new Font("Arial", Font.BOLD, 20));
+        JLabel lblSesion = new JLabel("Usuario: " + usuario + " | Rol: " + rol);
+        lblSesion.setFont(new Font("Arial", Font.PLAIN, 13));
+        JButton btnCerrarSesion = new JButton("Cerrar sesion");
+        btnCerrarSesion.setFocusPainted(false);
 
         header.add(titulo, BorderLayout.WEST);
+        JPanel panelSesion = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        panelSesion.setOpaque(false);
+        panelSesion.add(lblSesion);
+        panelSesion.add(btnCerrarSesion);
+        header.add(panelSesion, BorderLayout.EAST);
 
         // EVENTOS
-        btnCamion.addActionListener(e -> mostrarPanelCamion());
-        btnConductor.addActionListener(e -> mostrarPanelCamion()); // abre el mismo panel combinado
+        btnCamion.addActionListener(e -> mostrarPanelConductor());
+        btnConductor.addActionListener(e -> mostrarPanelConductor());
         btnKM.addActionListener(e -> mostrarPanelKilometraje());
         btnMantenimiento.addActionListener(e -> mostrarPanelMantenimiento());
+        btnCerrarSesion.addActionListener(e -> cerrarSesion());
+        aplicarPermisos(btnCamion, btnConductor, btnKM, btnMantenimiento, titulo);
 
         ventana.add(header, BorderLayout.NORTH);
         ventana.add(sidebar, BorderLayout.WEST);
@@ -86,6 +105,42 @@ public class Vista {
 
         ventana.setLocationRelativeTo(null);
         ventana.setVisible(true);
+    }
+
+    private void aplicarPermisos(JButton btnCamion, JButton btnConductor, JButton btnKM,
+                                 JButton btnMantenimiento, JLabel titulo) {
+        switch (rol) {
+            case "Administrador de flota":
+                btnCamion.setVisible(false);
+                btnKM.setVisible(false);
+                btnMantenimiento.setVisible(false);
+                titulo.setText("Panel de Flota");
+                mostrarPanelConductor();
+                break;
+            case "Administrador de mantencion":
+                btnCamion.setVisible(false);
+                btnConductor.setVisible(false);
+                btnKM.setVisible(false);
+                titulo.setText("Panel de Mantenimiento");
+                mostrarPanelMantenimiento();
+                break;
+            case "Camionero":
+                btnCamion.setVisible(false);
+                btnConductor.setVisible(false);
+                btnMantenimiento.setVisible(false);
+                titulo.setText("Panel de Camionero");
+                mostrarPanelKilometraje();
+                break;
+            default:
+                mostrarPanelConductor();
+                break;
+        }
+    }
+
+    private void cerrarSesion() {
+        ventana.dispose();
+        Login login = new Login();
+        login.setVisible(true);
     }
 
     private JButton crearBotonMenu(String texto) {
@@ -119,20 +174,6 @@ public class Vista {
                 BorderFactory.createEmptyBorder(6, 10, 6, 10)
         ));
         return campo;
-    }
-
-    private JButton crearBotonAccion(String texto, Color fondo, Color textoColor) {
-        JButton boton = new JButton(texto);
-        boton.setBackground(fondo);
-        boton.setForeground(textoColor);
-        boton.setFocusPainted(false);
-        boton.setBorderPainted(false);
-        boton.setOpaque(true);
-        boton.setContentAreaFilled(true);
-        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        boton.setFont(new Font("Arial", Font.BOLD, 13));
-        boton.setPreferredSize(new Dimension(115, 34));
-        return boton;
     }
 
     // =========================================================
@@ -331,7 +372,7 @@ public class Vista {
                 Conductor c = new Conductor();
                 c.setNombre(nombreConductor);
                 c.setLicencia(licencia);
-                conductorController.insertarConductor(c);
+                lblEstado.setText("Panel antiguo deshabilitado");
 
                 modeloTabla.addRow(new Object[]{
                         patente, marca, modelo, kmTexto, nombreConductor, licencia
@@ -376,6 +417,285 @@ public class Vista {
         JScrollPane scroll = new JScrollPane(contenido);
         scroll.setBorder(null);
 
+        fondo.add(scroll, BorderLayout.CENTER);
+
+        mainPanel.add(fondo, BorderLayout.CENTER);
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
+    private void mostrarPanelConductor() {
+
+        mainPanel.removeAll();
+        mainPanel.setLayout(new BorderLayout());
+
+        Color fondoGeneral = new Color(245, 247, 250);
+        Color blanco = Color.WHITE;
+        Color borde = new Color(220, 220, 220);
+        Color azul = new Color(93, 156, 236);
+        Color textoOscuro = new Color(45, 45, 45);
+
+        JPanel fondo = new JPanel(new BorderLayout());
+        fondo.setBackground(fondoGeneral);
+        fondo.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel titulo = new JLabel("Registrar Conductor");
+        titulo.setFont(new Font("Arial", Font.BOLD, 20));
+        titulo.setForeground(textoOscuro);
+        titulo.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
+        fondo.add(titulo, BorderLayout.NORTH);
+
+        JPanel contenido = new JPanel();
+        contenido.setLayout(new BoxLayout(contenido, BoxLayout.Y_AXIS));
+        contenido.setBackground(fondoGeneral);
+
+        JLabel lblEstado = new JLabel("Complete los datos del camion y del conductor.");
+        lblEstado.setFont(new Font("Arial", Font.BOLD, 13));
+        lblEstado.setOpaque(true);
+        lblEstado.setBackground(new Color(235, 248, 245));
+        lblEstado.setForeground(new Color(40, 90, 70));
+        lblEstado.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 230, 220)),
+                BorderFactory.createEmptyBorder(10, 12, 10, 12)
+        ));
+        lblEstado.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
+
+        contenido.add(lblEstado);
+        contenido.add(Box.createVerticalStrut(12));
+
+        JPanel tarjetaFormulario = new JPanel(new GridBagLayout());
+        tarjetaFormulario.setBackground(blanco);
+        tarjetaFormulario.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(borde),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        ));
+        tarjetaFormulario.setMaximumSize(new Dimension(Integer.MAX_VALUE, 320));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(12, 12, 12, 12);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JTextField txtPatente = crearCampoFormulario();
+        JTextField txtMarca = crearCampoFormulario();
+        JTextField txtModelo = crearCampoFormulario();
+        JTextField txtKilometraje = crearCampoFormulario();
+        JTextField txtNombreConductor = crearCampoFormulario();
+        JTextField txtLicencia = crearCampoFormulario();
+        JTextField txtUsuarioConductor = crearCampoFormulario();
+        JPasswordField txtPasswordConductor = new JPasswordField(14);
+        txtPasswordConductor.setFont(new Font("Arial", Font.PLAIN, 14));
+        txtPasswordConductor.setPreferredSize(new Dimension(170, 34));
+        txtPasswordConductor.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(210, 215, 225)),
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)
+        ));
+
+        JButton btnGuardar = new JButton("Guardar");
+        btnGuardar.setBackground(azul);
+        btnGuardar.setForeground(Color.WHITE);
+        btnGuardar.setFocusPainted(false);
+        btnGuardar.setBorderPainted(false);
+        btnGuardar.setOpaque(true);
+        btnGuardar.setContentAreaFilled(true);
+        btnGuardar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnGuardar.setFont(new Font("Arial", Font.BOLD, 14));
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        tarjetaFormulario.add(new JLabel("Patente del Camion:"), gbc);
+
+        gbc.gridx = 1;
+        tarjetaFormulario.add(txtPatente, gbc);
+
+        gbc.gridx = 2;
+        tarjetaFormulario.add(new JLabel("Marca del Camion:"), gbc);
+
+        gbc.gridx = 3;
+        tarjetaFormulario.add(txtMarca, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        tarjetaFormulario.add(new JLabel("Modelo del Camion:"), gbc);
+
+        gbc.gridx = 1;
+        tarjetaFormulario.add(txtModelo, gbc);
+
+        gbc.gridx = 2;
+        tarjetaFormulario.add(new JLabel("Kilometraje Inicial:"), gbc);
+
+        gbc.gridx = 3;
+        tarjetaFormulario.add(txtKilometraje, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        tarjetaFormulario.add(new JLabel("Nombre del Conductor:"), gbc);
+
+        gbc.gridx = 1;
+        tarjetaFormulario.add(txtNombreConductor, gbc);
+
+        gbc.gridx = 2;
+        tarjetaFormulario.add(new JLabel("Licencia:"), gbc);
+
+        gbc.gridx = 3;
+        tarjetaFormulario.add(txtLicencia, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        tarjetaFormulario.add(new JLabel("Usuario del Camionero:"), gbc);
+
+        gbc.gridx = 1;
+        tarjetaFormulario.add(txtUsuarioConductor, gbc);
+
+        gbc.gridx = 2;
+        tarjetaFormulario.add(new JLabel("Contrasena del Camionero:"), gbc);
+
+        gbc.gridx = 3;
+        tarjetaFormulario.add(txtPasswordConductor, gbc);
+
+        gbc.gridx = 3;
+        gbc.gridy = 4;
+        tarjetaFormulario.add(btnGuardar, gbc);
+
+        JPanel tarjetaTabla = new JPanel(new BorderLayout(10, 10));
+        tarjetaTabla.setBackground(blanco);
+        tarjetaTabla.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(borde),
+                BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        ));
+
+        JLabel subtitulo = new JLabel("Camiones y Conductores registrados");
+        subtitulo.setFont(new Font("Arial", Font.BOLD, 15));
+        subtitulo.setForeground(new Color(60, 60, 60));
+        tarjetaTabla.add(subtitulo, BorderLayout.NORTH);
+
+        String[] columnas = {"ID Camion", "Patente", "Marca", "Modelo", "Kilometraje", "Nombre", "Licencia", "Usuario"};
+        DefaultTableModel modeloTabla = new DefaultTableModel(columnas, 0);
+        JTable tabla = new JTable(modeloTabla);
+        tabla.setRowHeight(28);
+        tabla.setSelectionBackground(new Color(220, 230, 250));
+        tabla.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
+        tabla.getTableHeader().setBackground(new Color(235, 238, 245));
+
+        JScrollPane scrollTabla = new JScrollPane(tabla);
+        scrollTabla.setPreferredSize(new Dimension(650, 220));
+        tarjetaTabla.add(scrollTabla, BorderLayout.CENTER);
+
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panelBotones.setBackground(Color.WHITE);
+
+        JButton btnEliminar = new JButton("Eliminar");
+        btnEliminar.setBackground(azul);
+        btnEliminar.setForeground(Color.WHITE);
+        btnEliminar.setFocusPainted(false);
+        btnEliminar.setBorderPainted(false);
+        btnEliminar.setOpaque(true);
+        btnEliminar.setContentAreaFilled(true);
+        panelBotones.add(btnEliminar);
+        tarjetaTabla.add(panelBotones, BorderLayout.SOUTH);
+
+        Runnable cargarTabla = () -> {
+            modeloTabla.setRowCount(0);
+            for (RegistroConductorCamion registro : conductorController.listarRegistros()) {
+                modeloTabla.addRow(new Object[]{
+                        registro.getIdCamion(),
+                        registro.getPatente(),
+                        registro.getMarca(),
+                        registro.getModelo(),
+                        registro.getKilometraje(),
+                        registro.getNombreConductor(),
+                        registro.getLicencia(),
+                        registro.getUsuario()
+                });
+            }
+        };
+
+        cargarTabla.run();
+
+        btnGuardar.addActionListener(e -> {
+            try {
+                String patente = txtPatente.getText().trim();
+                String marca = txtMarca.getText().trim();
+                String modelo = txtModelo.getText().trim();
+                String kmTexto = txtKilometraje.getText().trim();
+                String nombreConductor = txtNombreConductor.getText().trim();
+                String licencia = txtLicencia.getText().trim();
+                String usuarioConductor = txtUsuarioConductor.getText().trim();
+                String passwordConductor = new String(txtPasswordConductor.getPassword()).trim();
+
+                if (patente.isEmpty() || marca.isEmpty() || modelo.isEmpty() || kmTexto.isEmpty()
+                        || nombreConductor.isEmpty() || licencia.isEmpty()
+                        || usuarioConductor.isEmpty() || passwordConductor.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Complete todos los campos");
+                    return;
+                }
+
+                Camion camion = new Camion();
+                camion.setPatente(patente);
+                camion.setMarca(marca);
+                camion.setModelo(modelo);
+                camion.setKilometraje(Integer.parseInt(kmTexto));
+
+                Conductor conductor = new Conductor();
+                conductor.setNombre(nombreConductor);
+                conductor.setLicencia(licencia);
+                conductor.setUsuario(usuarioConductor);
+                conductor.setPassword(passwordConductor);
+
+                conductorController.registrarConductorConCamion(conductor, camion);
+
+                lblEstado.setText("Registro guardado exitosamente");
+                lblEstado.setBackground(new Color(235, 248, 245));
+                lblEstado.setForeground(new Color(40, 90, 70));
+
+                txtPatente.setText("");
+                txtMarca.setText("");
+                txtModelo.setText("");
+                txtKilometraje.setText("");
+                txtNombreConductor.setText("");
+                txtLicencia.setText("");
+                txtUsuarioConductor.setText("");
+                txtPasswordConductor.setText("");
+
+                cargarTabla.run();
+            } catch (NumberFormatException ex) {
+                lblEstado.setText("Error: el kilometraje debe ser numerico");
+                lblEstado.setBackground(new Color(252, 235, 235));
+                lblEstado.setForeground(new Color(150, 50, 50));
+            } catch (Exception ex) {
+                lblEstado.setText("Error al guardar: " + ex.getMessage());
+                lblEstado.setBackground(new Color(252, 235, 235));
+                lblEstado.setForeground(new Color(150, 50, 50));
+            }
+        });
+
+        btnEliminar.addActionListener(e -> {
+            int fila = tabla.getSelectedRow();
+
+            if (fila == -1) {
+                JOptionPane.showMessageDialog(null, "Seleccione un registro");
+                return;
+            }
+
+            try {
+                int idCamion = Integer.parseInt(modeloTabla.getValueAt(fila, 0).toString());
+                conductorController.eliminarPorIdCamion(idCamion);
+                lblEstado.setText("Registro eliminado correctamente");
+                lblEstado.setBackground(new Color(235, 248, 245));
+                lblEstado.setForeground(new Color(40, 90, 70));
+                cargarTabla.run();
+            } catch (Exception ex) {
+                lblEstado.setText("Error al eliminar: " + ex.getMessage());
+                lblEstado.setBackground(new Color(252, 235, 235));
+                lblEstado.setForeground(new Color(150, 50, 50));
+            }
+        });
+
+        contenido.add(tarjetaFormulario);
+        contenido.add(Box.createVerticalStrut(15));
+        contenido.add(tarjetaTabla);
+
+        JScrollPane scroll = new JScrollPane(contenido);
+        scroll.setBorder(null);
         fondo.add(scroll, BorderLayout.CENTER);
 
         mainPanel.add(fondo, BorderLayout.CENTER);
@@ -554,7 +874,7 @@ public class Vista {
 
                 registroController.registrar(r);
 
-                if (resultado.toLowerCase().contains("alerta")) {
+                if (resultado.toLowerCase().contains("alerta!")) {
                     lblAlerta.setText("⚠️ " + resultado);
                     lblAlerta.setForeground(new Color(180, 80, 60));
                 } else {

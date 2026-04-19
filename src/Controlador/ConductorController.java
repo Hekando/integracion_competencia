@@ -1,29 +1,29 @@
 package Controlador;
 
-import BaseDatos.ConexionBD;
+import BaseDatos.ConductorDAO;
+import Modelo.Camion;
 import Modelo.Conductor;
+import Modelo.RegistroConductorCamion;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.util.List;
 
 public class ConductorController {
 
-    public void insertarConductor(Conductor conductor) {
+    private final ConductorDAO conductorDAO;
 
-        String sql = "INSERT INTO conductor (nombre, licencia) VALUES (?, ?)";
+    public ConductorController() {
+        conductorDAO = new ConductorDAO();
+    }
 
-        try (Connection con = ConexionBD.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+    public void registrarConductorConCamion(Conductor conductor, Camion camion) throws Exception {
+        conductorDAO.insertarConductorConCamion(conductor, camion);
+    }
 
-            ps.setString(1, conductor.getNombre());
-            ps.setString(2, conductor.getLicencia());
+    public List<RegistroConductorCamion> listarRegistros() {
+        return conductorDAO.listarConCamion();
+    }
 
-            ps.executeUpdate();
-
-            System.out.println("✅ Conductor guardado");
-
-        } catch (Exception e) {
-            System.out.println("❌ Error: " + e.getMessage());
-        }
+    public void eliminarPorIdCamion(int idCamion) throws Exception {
+        conductorDAO.eliminarPorIdCamion(idCamion);
     }
 }

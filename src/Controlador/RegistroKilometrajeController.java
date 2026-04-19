@@ -7,23 +7,24 @@ import java.util.List;
 
 public class RegistroKilometrajeController {
 
-    private RegistroKilometrajeDAO dao;
+    private final RegistroKilometrajeDAO dao;
 
     public RegistroKilometrajeController() {
         dao = new RegistroKilometrajeDAO();
     }
 
-    // INSERTAR
     public void registrar(RegistroKilometraje r) {
         dao.insertar(r);
     }
 
-    // LISTAR
     public List<RegistroKilometraje> listar() {
         return dao.listarTodos();
     }
 
-    // ELIMINAR
+    public List<RegistroKilometraje> listarPorCamion(int idCamion) {
+        return dao.listarPorCamion(idCamion);
+    }
+
     public void eliminar(int id) {
         dao.eliminar(id);
     }
