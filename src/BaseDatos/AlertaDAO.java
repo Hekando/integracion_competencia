@@ -85,5 +85,52 @@ public class AlertaDAO {
         } catch (Exception e) {
             System.out.println("❌ Error al actualizar alerta: " + e.getMessage());
         }
+
+
+    }
+
+    public void resolverAlertaPorCamion(int idCamion) {
+
+        String sql = "UPDATE alerta SET estado = 'Realizada' WHERE id_camion = ? AND estado = 'Pendiente'";
+
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idCamion);
+            ps.executeUpdate();
+
+            System.out.println("✅ Alerta marcada como realizada para camión ID: " + idCamion);
+
+        } catch (Exception e) {
+            System.out.println("❌ Error al resolver alerta: " + e.getMessage());
+        }
+
+    }
+
+    public List<Alerta> listarPendientes() {
+        List<Alerta> lista = new ArrayList<>();
+
+        String sql = "SELECT * FROM alerta WHERE estado = 'Pendiente'";
+
+        try (Connection con = ConexionBD.getConexion();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Alerta a = new Alerta();
+                a.setId(rs.getInt("id_alerta"));
+                a.setIdCamion(rs.getInt("id_camion"));
+                a.setKilometraje(rs.getInt("kilometraje"));
+                a.setFecha(rs.getDate("fecha").toLocalDate());
+                a.setEstado(rs.getString("estado"));
+
+                lista.add(a);
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ Error al listar pendientes: " + e.getMessage());
+        }
+
+        return lista;
     }
 }

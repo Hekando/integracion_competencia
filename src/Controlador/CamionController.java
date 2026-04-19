@@ -1,9 +1,9 @@
 package Controlador;
 
-import BaseDatos.CamionDAO;
 import BaseDatos.AlertaDAO;
-import Modelo.Camion;
+import BaseDatos.CamionDAO;
 import Modelo.Alerta;
+import Modelo.Camion;
 
 public class CamionController {
 
@@ -15,17 +15,14 @@ public class CamionController {
         alertaDAO = new AlertaDAO();
     }
 
-    // 🚛 Registrar kilometraje (SUMA y valida alerta)
     public String registrarKilometraje(String modelo, int kilometrajeIngresado) {
 
-        // 🔍 Buscar camión
         Camion camion = camionDAO.buscarPorModelo(modelo);
 
         if (camion == null) {
             return "Camión no encontrado";
         }
 
-        // 🔄 Actualizar KM (SUMANDO)
         int nuevoKM = camionDAO.actualizarKilometraje(
                 camion.getIdCamion(),
                 kilometrajeIngresado
@@ -35,16 +32,11 @@ public class CamionController {
             return "Error al actualizar kilometraje";
         }
 
-        // 🔍 Consultar último mantenimiento
         int kmUltimoMantenimiento = camionDAO.obtenerKmUltimoMantenimiento(camion.getIdCamion());
-
-        // 📊 Calcular diferencia
         int diferencia = nuevoKM - kmUltimoMantenimiento;
 
-        // 🔔 Generar alerta si la diferencia es >= 5000 KM
         if (diferencia >= 5000) {
 
-            // Verificar si ya existe una alerta pendiente
             if (!alertaDAO.existeAlertaActiva(camion.getIdCamion())) {
 
                 Alerta alerta = new Alerta();
@@ -56,12 +48,12 @@ public class CamionController {
                 alertaDAO.insertar(alerta);
 
                 return "⚠ ¡ALERTA GENERADA! Mantención requerida.\n" +
-                       "KM actual: " + nuevoKM + "\n" +
-                       "KM último mantenimiento: " + kmUltimoMantenimiento + "\n" +
-                       "Diferencia: " + diferencia + " km";
+                        "KM actual: " + nuevoKM + "\n" +
+                        "KM último mantenimiento: " + kmUltimoMantenimiento + "\n" +
+                        "Diferencia: " + diferencia + " km";
             } else {
                 return "⚠ Kilometraje actualizado (KM: " + nuevoKM + ")\n" +
-                       "Ya existe una alerta pendiente para este camión.";
+                        "Ya existe una alerta pendiente para este camión.";
             }
         }
 

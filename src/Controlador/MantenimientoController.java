@@ -1,31 +1,42 @@
 package Controlador;
 
-import BaseDatos.ConexionBD;
+import BaseDatos.MantenimientoDAO;
+import BaseDatos.AlertaDAO;
 import Modelo.Mantenimiento;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Date;
+
+import java.util.List;
 
 public class MantenimientoController {
 
+    private MantenimientoDAO mantenimientoDAO;
+    private AlertaDAO alertaDAO;
+
+    public MantenimientoController() {
+        mantenimientoDAO = new MantenimientoDAO();
+        alertaDAO = new AlertaDAO();
+    }
+
     public void insertarMantenimiento(Mantenimiento m) {
+        mantenimientoDAO.insertar(m);
 
-        String sql = "INSERT INTO mantenimientos (id_camion, fecha, tipo_mantenimiento) VALUES (?, ?, ?)";
+        // Marcar alerta como resuelta al realizar mantenimiento
+        alertaDAO.resolverAlertaPorCamion(m.getIdCamion());
+    }
 
-        try (Connection con = ConexionBD.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+    public List<Mantenimiento> listarTodos() {
+        return mantenimientoDAO.listarTodos();
+    }
 
-            ps.setInt(1, m.getIdCamion());
-            ps.setDate(2, Date.valueOf(m.getFecha()));
-            ps.setString(3, m.getTipo());
+    public List<Mantenimiento> listarPorCamion(int idCamion) {
+        return mantenimientoDAO.listarPorCamion(idCamion);
+    }
 
-            ps.executeUpdate();
+    public void actualizarMantenimiento(Mantenimiento m) {
+        mantenimientoDAO.actualizar(m);
+    }
 
-            System.out.println("🔧 Mantenimiento guardado");
-
-        } catch (Exception e) {
-            System.out.println("❌ Error: " + e.getMessage());
-        }
+    public void eliminarMantenimiento(int id) {
+        mantenimientoDAO.eliminar(id);
     }
 }

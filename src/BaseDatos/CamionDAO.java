@@ -1,7 +1,11 @@
 package BaseDatos;
 
 import Modelo.Camion;
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class CamionDAO {
 
@@ -16,7 +20,7 @@ public class CamionDAO {
         }
     }
 
-    // 🔍 Buscar camión por modelo
+    // Buscar camión por modelo
     public Camion buscarPorModelo(String modelo) {
 
         Camion camion = null;
@@ -31,11 +35,10 @@ public class CamionDAO {
             if (rs.next()) {
                 camion = new Camion();
                 camion.setIdCamion(rs.getInt("id_camion"));
+                camion.setPatente(rs.getString("patente"));
                 camion.setMarca(rs.getString("marca"));
                 camion.setModelo(rs.getString("modelo"));
-                camion.setAnio(rs.getInt("anio"));
                 camion.setKilometraje(rs.getInt("kilometraje"));
-                camion.setEstadoMantenimiento(rs.getString("estado_mantenimiento"));
             }
 
         } catch (SQLException e) {
@@ -46,7 +49,7 @@ public class CamionDAO {
         return camion;
     }
 
-    // Actualizar kilometraje SUMANDO
+    // Actualizar kilometraje sumando
     public int actualizarKilometraje(int idCamion, int kmIngresado) {
 
         String sqlSelect = "SELECT kilometraje FROM camion WHERE id_camion = ?";
@@ -60,26 +63,25 @@ public class CamionDAO {
 
             if (rs.next()) {
                 int kmActual = rs.getInt("kilometraje");
-
                 int nuevoKM = kmActual + kmIngresado;
 
                 PreparedStatement stmtUpdate = conexion.prepareStatement(sqlUpdate);
                 stmtUpdate.setInt(1, nuevoKM);
                 stmtUpdate.setInt(2, idCamion);
-
                 stmtUpdate.executeUpdate();
 
-                return nuevoKM; // IMPORTANTEE
+                return nuevoKM;
             }
 
         } catch (SQLException e) {
+            System.out.println("Error al actualizar kilometraje");
             e.printStackTrace();
         }
 
         return -1;
     }
 
-    // 🔍 Obtener kilometraje del último mantenimiento
+    // Obtener kilometraje del último mantenimiento
     public int obtenerKmUltimoMantenimiento(int idCamion) {
         String sql = "SELECT kilometraje FROM mantenimiento WHERE id_camion = ? ORDER BY fecha DESC LIMIT 1";
 
@@ -98,7 +100,6 @@ public class CamionDAO {
             e.printStackTrace();
         }
 
-        return 0; // Si no hay mantenimientos, retorna 0
+        return 0;
     }
-
 }

@@ -25,16 +25,16 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../segundo semestre/Fundamento POO/PROYECTO POO/mysql-connector-j-9.5.0/mysql-connector-j-9.5.0.jar!/" />
+          <root url="jar://C:/Users/segundo semestre/Fundamento POO/PROYECTO POO/mysql-connector-j-9.5.0/mysql-connector-j-9.5.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/mysql-connector-j-9.5.0/mysql-connector-j-9.5.0.jar!/" />
