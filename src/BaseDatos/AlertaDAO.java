@@ -8,6 +8,7 @@ import java.util.List;
 
 public class AlertaDAO {
 
+    // Inserta una nueva alerta en la base de datos
     public void insertar(Alerta alerta) {
         String sql = "INSERT INTO alerta (id_camion, kilometraje, fecha, estado) VALUES (?, ?, ?, ?)";
 
@@ -21,14 +22,16 @@ public class AlertaDAO {
 
             ps.executeUpdate();
 
-            System.out.println("✅ Alerta insertada correctamente en BD - Camión ID: " + alerta.getIdCamion() + ", KM: " + alerta.getKilometraje());
+            System.out.println("Alerta insertada correctamente en BD - Camión ID: " + alerta.getIdCamion() + ", KM: " + alerta.getKilometraje());
 
         } catch (Exception e) {
-            System.out.println("❌ Error al insertar alerta: " + e.getMessage());
+            System.out.println("Error al insertar alerta: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    // Verifica si existe una alerta pendiente para un camión específico
+    // Se utiliza para evitar generar alertas duplicadas
     public boolean existeAlertaActiva(int idCamion) {
         String sql = "SELECT * FROM alerta WHERE id_camion = ? AND estado = 'Pendiente'";
 
@@ -41,11 +44,12 @@ public class AlertaDAO {
             return rs.next();
 
         } catch (Exception e) {
-            System.out.println("❌ Error al verificar alerta: " + e.getMessage());
+            System.out.println("Error al verificar alerta: " + e.getMessage());
             return false;
         }
     }
 
+    // Obtiene todas las alertas registradas en la base de datos
     public List<Alerta> listar() {
         List<Alerta> lista = new ArrayList<>();
         String sql = "SELECT * FROM alerta";
@@ -65,12 +69,13 @@ public class AlertaDAO {
             }
 
         } catch (Exception e) {
-            System.out.println("❌ Error al listar alertas: " + e.getMessage());
+            System.out.println("Error al listar alertas: " + e.getMessage());
         }
 
         return lista;
     }
 
+    // Actualiza el estado de una alerta (por ejemplo: Pendiente a Realizada)
     public void actualizarEstado(int idAlerta, String estado) {
         String sql = "UPDATE alerta SET estado = ? WHERE id_alerta = ?";
 
@@ -83,12 +88,12 @@ public class AlertaDAO {
             ps.executeUpdate();
 
         } catch (Exception e) {
-            System.out.println("❌ Error al actualizar alerta: " + e.getMessage());
+            System.out.println("Error al actualizar alerta: " + e.getMessage());
         }
-
-
     }
 
+    // Marca como realizadas todas las alertas pendientes de un camión
+    // Se utiliza cuando se realiza el mantenimiento correspondiente
     public void resolverAlertaPorCamion(int idCamion) {
 
         String sql = "UPDATE alerta SET estado = 'Realizada' WHERE id_camion = ? AND estado = 'Pendiente'";
@@ -99,14 +104,15 @@ public class AlertaDAO {
             ps.setInt(1, idCamion);
             ps.executeUpdate();
 
-            System.out.println("✅ Alerta marcada como realizada para camión ID: " + idCamion);
+            System.out.println("Alerta marcada como realizada para camión ID: " + idCamion);
 
         } catch (Exception e) {
-            System.out.println("❌ Error al resolver alerta: " + e.getMessage());
+            System.out.println("Error al resolver alerta: " + e.getMessage());
         }
 
     }
 
+    // Obtiene únicamente las alertas que se encuentran en estado pendiente
     public List<Alerta> listarPendientes() {
         List<Alerta> lista = new ArrayList<>();
 
@@ -128,7 +134,7 @@ public class AlertaDAO {
             }
 
         } catch (Exception e) {
-            System.out.println("❌ Error al listar pendientes: " + e.getMessage());
+            System.out.println("Error al listar pendientes: " + e.getMessage());
         }
 
         return lista;

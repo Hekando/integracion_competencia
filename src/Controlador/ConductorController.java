@@ -1,29 +1,38 @@
 package Controlador;
 
-import BaseDatos.ConexionBD;
+import BaseDatos.ConductorDAO;
+import Modelo.Camion;
 import Modelo.Conductor;
+import Modelo.RegistroConductorCamion;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.util.List;
 
 public class ConductorController {
 
-    public void insertarConductor(Conductor conductor) {
+    private final ConductorDAO conductorDAO;
 
-        String sql = "INSERT INTO conductor (nombre, licencia) VALUES (?, ?)";
+    // Constructor que inicializa el acceso a datos de conductor
+    public ConductorController() {
+        conductorDAO = new ConductorDAO();
+    }
 
-        try (Connection con = ConexionBD.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+    // Registra un nuevo conductor junto con su camión asociado
+    public void registrarConductorConCamion(Conductor conductor, Camion camion) throws Exception {
+        conductorDAO.insertarConductorConCamion(conductor, camion);
+    }
 
-            ps.setString(1, conductor.getNombre());
-            ps.setString(2, conductor.getLicencia());
+    // Obtiene la lista de registros combinados de conductor y camión
+    public List<RegistroConductorCamion> listarRegistros() {
+        return conductorDAO.listarConCamion();
+    }
 
-            ps.executeUpdate();
+    // Elimina un conductor y su camión asociado utilizando el ID del camión
+    public void eliminarPorIdCamion(int idCamion) throws Exception {
+        conductorDAO.eliminarPorIdCamion(idCamion);
+    }
 
-            System.out.println("✅ Conductor guardado");
-
-        } catch (Exception e) {
-            System.out.println("❌ Error: " + e.getMessage());
-        }
+    // Actualiza los datos del conductor y del camión asociado
+    public void actualizarConductorCamion(Conductor conductor, Camion camion) throws Exception {
+        conductorDAO.actualizarConductorCamion(conductor, camion);
     }
 }

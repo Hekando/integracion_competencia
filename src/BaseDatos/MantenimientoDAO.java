@@ -8,6 +8,7 @@ import java.util.List;
 
 public class MantenimientoDAO {
 
+    // Inserta un nuevo registro de mantenimiento en la base de datos
     public void insertar(Mantenimiento mantenimiento) {
         String sql = "INSERT INTO mantenimiento (id_camion, fecha, kilometraje, tipo) VALUES (?, ?, ?, ?)";
 
@@ -16,6 +17,7 @@ public class MantenimientoDAO {
 
             ps.setInt(1, mantenimiento.getIdCamion());
 
+            // Si la fecha es nula, se asigna la fecha actual del sistema
             if (mantenimiento.getFecha() != null) {
                 ps.setDate(2, Date.valueOf(mantenimiento.getFecha()));
             } else {
@@ -27,13 +29,14 @@ public class MantenimientoDAO {
 
             ps.executeUpdate();
 
-            System.out.println("✅ Mantenimiento insertado correctamente");
+            System.out.println("Mantenimiento insertado correctamente");
 
         } catch (Exception e) {
-            System.out.println("❌ Error al insertar mantenimiento: " + e.getMessage());
+            System.out.println("Error al insertar mantenimiento: " + e.getMessage());
         }
     }
 
+    // Lista todos los registros de mantenimiento
     public List<Mantenimiento> listarTodos() {
         List<Mantenimiento> lista = new ArrayList<>();
         String sql = "SELECT * FROM mantenimiento";
@@ -42,6 +45,7 @@ public class MantenimientoDAO {
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 
+            // Recorre los resultados y los convierte en objetos
             while (rs.next()) {
                 Mantenimiento m = new Mantenimiento();
                 m.setId(rs.getInt("id_mantenimiento"));
@@ -53,12 +57,13 @@ public class MantenimientoDAO {
             }
 
         } catch (Exception e) {
-            System.out.println("❌ Error al listar mantenimientos: " + e.getMessage());
+            System.out.println("Error al listar mantenimientos: " + e.getMessage());
         }
 
         return lista;
     }
 
+    // Lista los mantenimientos asociados a un camión específico
     public List<Mantenimiento> listarPorCamion(int idCamion) {
         List<Mantenimiento> lista = new ArrayList<>();
         String sql = "SELECT * FROM mantenimiento WHERE id_camion = ?";
@@ -69,6 +74,7 @@ public class MantenimientoDAO {
             ps.setInt(1, idCamion);
             ResultSet rs = ps.executeQuery();
 
+            // Mapea los resultados a objetos
             while (rs.next()) {
                 Mantenimiento m = new Mantenimiento();
                 m.setId(rs.getInt("id_mantenimiento"));
@@ -80,12 +86,13 @@ public class MantenimientoDAO {
             }
 
         } catch (Exception e) {
-            System.out.println("❌ Error al listar mantenimientos por camión: " + e.getMessage());
+            System.out.println("Error al listar mantenimientos por camión: " + e.getMessage());
         }
 
         return lista;
     }
 
+    // Actualiza un registro de mantenimiento existente
     public void actualizar(Mantenimiento mantenimiento) {
         String sql = "UPDATE mantenimiento SET id_camion = ?, fecha = ?, kilometraje = ?, tipo = ? WHERE id_mantenimiento = ?";
 
@@ -100,13 +107,14 @@ public class MantenimientoDAO {
 
             ps.executeUpdate();
 
-            System.out.println("✅ Mantenimiento actualizado");
+            System.out.println("Mantenimiento actualizado");
 
         } catch (Exception e) {
-            System.out.println("❌ Error al actualizar mantenimiento: " + e.getMessage());
+            System.out.println("Error al actualizar mantenimiento: " + e.getMessage());
         }
     }
 
+    // Elimina un registro de mantenimiento por su ID
     public void eliminar(int id) {
         String sql = "DELETE FROM mantenimiento WHERE id_mantenimiento = ?";
 
@@ -116,13 +124,14 @@ public class MantenimientoDAO {
             ps.setInt(1, id);
             ps.executeUpdate();
 
-            System.out.println("✅ Mantenimiento eliminado");
+            System.out.println("Mantenimiento eliminado");
 
         } catch (Exception e) {
-            System.out.println("❌ Error al eliminar mantenimiento: " + e.getMessage());
+            System.out.println("Error al eliminar mantenimiento: " + e.getMessage());
         }
     }
 
+    // Obtiene el último kilometraje registrado de mantenimiento de un camión
     public int obtenerUltimoKilometraje(int idCamion) {
         String sql = "SELECT MAX(kilometraje) AS ultimo FROM mantenimiento WHERE id_camion = ?";
         int ultimo = 0;
@@ -133,17 +142,19 @@ public class MantenimientoDAO {
             ps.setInt(1, idCamion);
             ResultSet rs = ps.executeQuery();
 
+            // Si existe resultado, se obtiene el valor máximo
             if (rs.next()) {
                 ultimo = rs.getInt("ultimo");
             }
 
         } catch (Exception e) {
-            System.out.println("❌ Error al obtener último mantenimiento: " + e.getMessage());
+            System.out.println("Error al obtener último mantenimiento: " + e.getMessage());
         }
 
         return ultimo;
     }
 
+    // Registra automáticamente un mantenimiento preventivo
     public void registrarMantenimiento(int idCamion, int kilometraje) {
         Mantenimiento m = new Mantenimiento();
         m.setIdCamion(idCamion);
