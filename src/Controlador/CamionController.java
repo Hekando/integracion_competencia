@@ -33,6 +33,10 @@ public class CamionController {
         return camionDAO.listarPorNombreConductor(nombreConductor);
     }
 
+    public List<Camion> listarTodos() {
+        return camionDAO.listarTodos();
+    }
+
     // Sobrecarga que permite registrar kilometraje usando el modelo del camión
     public String registrarKilometraje(String modelo, int kilometrajeIngresado) {
 

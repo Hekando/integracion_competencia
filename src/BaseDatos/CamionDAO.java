@@ -181,4 +181,22 @@ public class CamionDAO {
             e.printStackTrace();
         }
     }
+
+    public List<Camion> listarTodos() {
+        List<Camion> lista = new ArrayList<>();
+        String sql = "SELECT * FROM camion ORDER BY id_camion";
+
+        try (PreparedStatement stmt = conexion.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                lista.add(mapearCamion(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
 }

@@ -129,7 +129,15 @@ public class VistaPanelMantenimiento extends JPanel {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JComboBox<String> comboIdCamion = new JComboBox<>(new String[]{"8", "9", "10", "11", "16", "17", "18", "19"});
+        JComboBox<String> comboIdCamion = new JComboBox<>();
+
+        Controlador.CamionController camionController = new Controlador.CamionController();
+
+        for (Modelo.Camion c : camionController.listarTodos()) {
+            comboIdCamion.addItem(
+                    c.getIdCamion() + " - " + c.getPatente()
+            );
+        }
 
         // FECHA AUTOMÁTICA POR DÍA + EDITABLE
         SpinnerDateModel modeloFecha = new SpinnerDateModel(
@@ -263,7 +271,12 @@ public class VistaPanelMantenimiento extends JPanel {
                         .toLocalDate();
 
                 Mantenimiento m = new Mantenimiento();
-                m.setIdCamion(Integer.parseInt(comboIdCamion.getSelectedItem().toString()));
+
+                String texto = comboIdCamion.getSelectedItem().toString();
+                String idTexto = texto.split(" - ")[0];
+                int idCamion = Integer.parseInt(idTexto);
+
+                m.setIdCamion(idCamion);
                 m.setFecha(fecha);
                 m.setKilometraje(Integer.parseInt(kmTexto));
                 m.setTipo(comboTipo.getSelectedItem().toString());
