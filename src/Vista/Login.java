@@ -107,7 +107,13 @@ public class Login extends JFrame {
         agregarPlaceholderPassword(txtPassword, "Ej: 12345");
 
         // ComboBox para selección de rol
-        String[] roles = {"Administrador de flota", "Administrador de mantencion", "Camionero"};
+        String[] roles = {
+                "Administrador de flota",
+                "Administrador de mantencion",
+                "Camionero",
+                "AdmInventario",
+                "TecnicoIT"
+        };
         comboRol = new JComboBox<>(roles);
         comboRol.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
 

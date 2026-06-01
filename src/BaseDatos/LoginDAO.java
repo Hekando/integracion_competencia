@@ -50,12 +50,31 @@ public class LoginDAO {
 
     // Convierte el rol de la interfaz al formato almacenado en la base de datos
     private String mapearRolABaseDatos(String rol) {
+
         if ("Administrador de flota".equals(rol)) {
             return "AdmFlota";
         }
+
         if ("Administrador de mantencion".equals(rol)) {
             return "AdmMantenimiento";
         }
+
+        if ("AdmInventario".equals(rol)) {
+            return "AdmInventario";
+        }
+
+        if ("TecnicoIT".equals(rol)) {
+            return "TecnicoIT";
+        }
+
+        if ("TecMantenimientoOficina".equals(rol)) {
+            return "TecMantenimientoOficina";
+        }
+
+        if ("AdmMantenimientoOficina".equals(rol)) {
+            return "AdmMantenimientoOficina";
+        }
+
         return null;
     }
 }

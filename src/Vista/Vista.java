@@ -61,6 +61,10 @@ public class Vista {
         JButton btnConductor = crearBotonMenu("Registrar Conductor");
         JButton btnKM = crearBotonMenu("Registrar KM");
         JButton btnMantenimiento = crearBotonMenu("Mantenimiento");
+        JButton btnEquipo = crearBotonMenu("Equipos");
+        JButton btnInventario = crearBotonMenu("Inventario");
+        JButton btnSoftware = crearBotonMenu("Software");
+        JButton btnMantEquipo = crearBotonMenu("Mant. Equipos");
 
         sidebar.add(logo);
         sidebar.add(Box.createVerticalStrut(20));
@@ -68,6 +72,10 @@ public class Vista {
         sidebar.add(btnConductor);
         sidebar.add(btnKM);
         sidebar.add(btnMantenimiento);
+        sidebar.add(btnEquipo);
+        sidebar.add(btnInventario);
+        sidebar.add(btnSoftware);
+        sidebar.add(btnMantEquipo);
 
         // Panel central donde se cargan las vistas
         mainPanel = new JPanel(new BorderLayout());
@@ -138,9 +146,23 @@ public class Vista {
         btnConductor.addActionListener(e -> mostrarPanel(new VistaPanelConductor()));
         btnKM.addActionListener(e -> mostrarPanel(new VistaPanelKilometraje(usuario)));
         btnMantenimiento.addActionListener(e -> mostrarPanel(new VistaPanelMantenimiento()));
+        btnEquipo.addActionListener(e -> mostrarPanel(new VistaPanelEquipo()));
+        btnInventario.addActionListener(e -> mostrarPanel(new VistaPanelInventario()));
+        btnSoftware.addActionListener(e -> mostrarPanel(new VistaPanelSoftware()));
+        btnMantEquipo.addActionListener(e -> mostrarPanel(new VistaPanelMantenimientoEquipo()));
 
         // Aplicación de permisos según rol
-        aplicarPermisos(btnCamion, btnConductor, btnKM, btnMantenimiento, titulo);
+        aplicarPermisos(
+                btnCamion,
+                btnConductor,
+                btnKM,
+                btnMantenimiento,
+                btnEquipo,
+                btnInventario,
+                btnSoftware,
+                btnMantEquipo,
+                titulo
+        );
 
         ventana.add(header, BorderLayout.NORTH);
         ventana.add(sidebar, BorderLayout.WEST);
@@ -153,35 +175,65 @@ public class Vista {
     /**
      * Controla la visibilidad de opciones según el rol del usuario.
      */
-    private void aplicarPermisos(JButton btnCamion, JButton btnConductor, JButton btnKM,
-                                 JButton btnMantenimiento, JLabel titulo) {
+    private void aplicarPermisos(
+            JButton btnCamion,
+            JButton btnConductor,
+            JButton btnKM,
+            JButton btnMantenimiento,
+            JButton btnEquipo,
+            JButton btnInventario,
+            JButton btnSoftware,
+            JButton btnMantEquipo,
+            JLabel titulo
+    ) {
 
+        // PRIMERO: OCULTAMOS TODO
+        btnCamion.setVisible(false);
+        btnConductor.setVisible(false);
+        btnKM.setVisible(false);
+        btnMantenimiento.setVisible(false);
+        btnEquipo.setVisible(false);
+        btnInventario.setVisible(false);
+        btnSoftware.setVisible(false);
+        btnMantEquipo.setVisible(false);
+
+        // LUEGO: ACTIVAMOS SEGÚN ROL
         switch (rol) {
+
             case "Administrador de flota":
-                btnCamion.setVisible(false);
-                btnKM.setVisible(false);
-                btnMantenimiento.setVisible(false);
+                btnConductor.setVisible(true);
                 titulo.setText("Panel de Flota");
                 mostrarPanel(new VistaPanelConductor());
                 break;
 
             case "Administrador de mantencion":
-                btnCamion.setVisible(false);
-                btnConductor.setVisible(false);
-                btnKM.setVisible(false);
+                btnMantenimiento.setVisible(true);
+                btnMantEquipo.setVisible(true);
                 titulo.setText("Panel de Mantenimiento");
                 mostrarPanel(new VistaPanelMantenimiento());
                 break;
 
             case "Camionero":
-                btnCamion.setVisible(false);
-                btnConductor.setVisible(false);
-                btnMantenimiento.setVisible(false);
+                btnKM.setVisible(true);
                 titulo.setText("Panel de Camionero");
                 mostrarPanel(new VistaPanelKilometraje(usuario));
                 break;
 
+            case "AdmInventario":
+                btnInventario.setVisible(true);
+                titulo.setText("Panel de Inventario");
+                mostrarPanel(new VistaPanelInventario());
+                break;
+
+            case "TecnicoIT":
+                btnSoftware.setVisible(true);
+                btnEquipo.setVisible(true);
+                titulo.setText("Panel TI");
+                mostrarPanel(new VistaPanelSoftware());
+                break;
+
             default:
+                titulo.setText("Panel General");
                 mostrarPanel(new VistaPanelConductor());
                 break;
         }
