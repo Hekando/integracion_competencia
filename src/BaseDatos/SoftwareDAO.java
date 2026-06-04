@@ -14,11 +14,11 @@ public class SoftwareDAO {
     }
 
     public void insertar(Software s) throws SQLException {
-        String sql = "INSERT INTO software (nombre, descripcion) VALUES (?, ?)";
+        String sql = "INSERT INTO software (nombre, tipo) VALUES (?, ?)";
         PreparedStatement ps = conn.prepareStatement(sql);
 
         ps.setString(1, s.getNombre());
-        ps.setString(2, s.getDescripcion());
+        ps.setString(2, s.getTipo());
 
         ps.executeUpdate();
     }
@@ -33,7 +33,7 @@ public class SoftwareDAO {
             Software s = new Software();
             s.setIdSoftware(rs.getInt("id_software"));
             s.setNombre(rs.getString("nombre"));
-            s.setDescripcion(rs.getString("descripcion"));
+            s.setTipo(rs.getString("tipo"));
             lista.add(s);
         }
         return lista;

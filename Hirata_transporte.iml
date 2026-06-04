@@ -16,7 +16,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Downloads/DatosPaiseUMM_NICOL_ALIIE/DatosPaiseUMM_NICOL_ALIIE AMEN/DatosPaiseUMM_NICOL_ALIIE AMEN/mysql/mysql-connector-j-9.5.0.jar!/" />
@@ -38,6 +38,15 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/mysql-connector-j-9.5.0/mysql-connector-j-9.5.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../clon/integracion_competencia/mysql-connector-j-9.5.0/mysql-connector-j-9.5.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

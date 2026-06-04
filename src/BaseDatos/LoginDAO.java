@@ -59,11 +59,11 @@ public class LoginDAO {
             return "AdmMantenimiento";
         }
 
-        if ("AdmInventario".equals(rol)) {
+        if ("Administrador inventario".equals(rol)) {
             return "AdmInventario";
         }
 
-        if ("TecnicoIT".equals(rol)) {
+        if ("Tecnico IT".equals(rol)) {
             return "TecnicoIT";
         }
 
