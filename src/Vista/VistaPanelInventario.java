@@ -1,5 +1,10 @@
 package Vista;
 
+import BaseDatos.ConexionBD;
+import Controlador.InventarioController;
+import Modelo.InventarioPieza;
+import java.sql.Connection;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -36,6 +41,31 @@ public class VistaPanelInventario extends JPanel {
     }
 
     private void guardar() {
-        JOptionPane.showMessageDialog(this, "Pieza guardada (simulado)");
+        try {
+            String nombre = txtNombre.getText().trim();
+            String descripcion = txtDescripcion.getText().trim();
+            int cantidad = Integer.parseInt(txtCantidad.getText().trim());
+
+            InventarioPieza pieza = new InventarioPieza();
+            pieza.setNombre(nombre);
+            pieza.setCantidad(cantidad);
+            pieza.setDescripcion(descripcion);
+
+            Connection conn = ConexionBD.getConexion();
+            InventarioController controller = new InventarioController(conn);
+
+            controller.registrar(pieza);
+
+            JOptionPane.showMessageDialog(this, "Pieza guardada correctamente");
+
+            txtNombre.setText("");
+            txtCantidad.setText("");
+            txtDescripcion.setText("");
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "La cantidad debe ser un número válido");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al guardar la pieza: " + e.getMessage());
+        }
     }
 }
