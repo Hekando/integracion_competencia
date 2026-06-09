@@ -67,7 +67,7 @@ public class LoginDAO {
             return "TecnicoIT";
         }
 
-        if ("TecMantenimientoOficina".equals(rol)) {
+        if ("Tecnico mantenimiento oficina".equals(rol)) {
             return "TecMantenimientoOficina";
         }
 
