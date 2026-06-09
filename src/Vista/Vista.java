@@ -239,6 +239,12 @@ public class Vista {
                 mostrarPanel(new VistaPanelSoftware());
                 break;
 
+            case "Tecnico mantenimiento oficina":
+                btnMantEquipo.setVisible(true);
+                titulo.setText("Panel de Mantenimiento de quipo");
+                mostrarPanel(new VistaPanelMantenimientoEquipo());
+                break;
+
             default:
                 titulo.setText("Panel General");
                 mostrarPanel(new VistaPanelConductor());

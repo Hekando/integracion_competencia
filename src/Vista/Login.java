@@ -112,7 +112,8 @@ public class Login extends JFrame {
                 "Administrador de mantencion",
                 "Camionero",
                 "Administrador inventario",
-                "Tecnico IT"
+                "Tecnico IT",
+                "Tecnico mantenimiento oficina"
         };
         comboRol = new JComboBox<>(roles);
         comboRol.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));

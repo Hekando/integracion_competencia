@@ -53,4 +53,14 @@ public class EquipoDAO {
         ps.setInt(1, id);
         ps.executeUpdate();
     }
+
+    public void actualizarEstado(int idEquipo, String estado) throws SQLException {
+        String sql = "UPDATE equipo SET estado = ? WHERE id_equipo = ?";
+
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, estado);
+        ps.setInt(2, idEquipo);
+
+        ps.executeUpdate();
+    }
 }

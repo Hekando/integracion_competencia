@@ -27,4 +27,8 @@ public class EquipoController {
     public void eliminar(int id) throws Exception {
         dao.eliminar(id);
     }
+
+    public void actualizarEstado(int idEquipo, String estado) throws Exception {
+        dao.actualizarEstado(idEquipo, estado);
+    }
 }
