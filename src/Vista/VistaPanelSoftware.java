@@ -45,12 +45,74 @@ public class VistaPanelSoftware extends JPanel {
         setBackground(new Color(245, 247, 250));
 
         JLabel titulo = new JLabel("Gestión de Software por Equipo");
-        titulo.setFont(new Font("Arial", Font.BOLD, 20));
-        titulo.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
 
-        JPanel panelSuperior = new JPanel(new GridLayout(4, 2, 10, 10));
-        panelSuperior.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+        titulo.setFont(
+                new Font("Segoe UI", Font.BOLD, 24)
+        );
 
+        titulo.setBorder(
+                BorderFactory.createEmptyBorder(
+                        20,20,20,20
+                )
+        );
+
+        JLabel lblInfo = new JLabel(
+                "Administre el software instalado y sus actualizaciones."
+        );
+
+        lblInfo.setOpaque(true);
+
+        lblInfo.setBackground(
+                new Color(223,240,216)
+        );
+
+        lblInfo.setForeground(
+                new Color(60,118,61)
+        );
+
+        lblInfo.setBorder(
+                BorderFactory.createEmptyBorder(
+                        12,20,12,20
+                )
+        );
+
+        JPanel superior = new JPanel(
+                new BorderLayout()
+        );
+
+        superior.setBackground(
+                new Color(245,247,250)
+        );
+
+        superior.add(
+                titulo,
+                BorderLayout.WEST
+        );
+
+        superior.add(
+                lblInfo,
+                BorderLayout.EAST
+        );
+
+
+        JPanel panelFormulario = new JPanel(new GridBagLayout());
+
+        panelFormulario.setBackground(Color.WHITE);
+
+        panelFormulario.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                new Color(220,220,220)
+                        ),
+                        BorderFactory.createEmptyBorder(
+                                25,25,25,25
+                        )
+                )
+        );
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(15,15,15,15);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         comboEquipos = new JComboBox<>();
         comboSoftware = new JComboBox<>();
         txtVersion = new JTextField();
@@ -58,17 +120,33 @@ public class VistaPanelSoftware extends JPanel {
         btnAgregar = new JButton("Agregar software al equipo");
         btnNuevoSoftware = new JButton("Nuevo software");
 
-        panelSuperior.add(new JLabel("Equipo:"));
-        panelSuperior.add(comboEquipos);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panelFormulario.add(new JLabel("Equipo:"), gbc);
 
-        panelSuperior.add(new JLabel("Software:"));
-        panelSuperior.add(comboSoftware);
+        gbc.gridx = 1;
+        panelFormulario.add(comboEquipos, gbc);
 
-        panelSuperior.add(new JLabel("Versión instalada:"));
-        panelSuperior.add(txtVersion);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panelFormulario.add(new JLabel("Software:"), gbc);
 
-        panelSuperior.add(btnNuevoSoftware);
-        panelSuperior.add(btnAgregar);
+        gbc.gridx = 1;
+        panelFormulario.add(comboSoftware, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panelFormulario.add(new JLabel("Versión instalada:"), gbc);
+
+        gbc.gridx = 1;
+        panelFormulario.add(txtVersion, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        panelFormulario.add(btnNuevoSoftware, gbc);
+
+        gbc.gridx = 1;
+        panelFormulario.add(btnAgregar, gbc);
 
         modeloTabla = new DefaultTableModel();
         modeloTabla.addColumn("Equipo");
@@ -79,9 +157,55 @@ public class VistaPanelSoftware extends JPanel {
         tabla = new JTable(modeloTabla);
         JScrollPane scroll = new JScrollPane(tabla);
 
-        add(titulo, BorderLayout.NORTH);
-        add(panelSuperior, BorderLayout.CENTER);
-        add(scroll, BorderLayout.SOUTH);
+        JPanel panelTabla = new JPanel(
+                new BorderLayout()
+        );
+
+        panelTabla.setBackground(Color.WHITE);
+
+        panelTabla.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                new Color(220,220,220)
+                        ),
+                        BorderFactory.createEmptyBorder(
+                                15,15,15,15
+                        )
+                )
+        );
+
+        panelTabla.add(
+                new JScrollPane(tabla),
+                BorderLayout.CENTER
+        );
+
+        JPanel centro = new JPanel(
+                new BorderLayout()
+        );
+
+        centro.setBackground(
+                new Color(245,247,250)
+        );
+
+        centro.add(
+                panelFormulario,
+                BorderLayout.NORTH
+        );
+
+        centro.add(
+                panelTabla,
+                BorderLayout.CENTER
+        );
+
+        add(
+                superior,
+                BorderLayout.NORTH
+        );
+
+        add(
+                centro,
+                BorderLayout.CENTER
+        );
 
         cargarEquipos();
         cargarSoftware();

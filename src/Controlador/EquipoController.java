@@ -31,4 +31,5 @@ public class EquipoController {
     public void actualizarEstado(int idEquipo, String estado) throws Exception {
         dao.actualizarEstado(idEquipo, estado);
     }
+
 }

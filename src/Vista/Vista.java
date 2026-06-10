@@ -66,6 +66,7 @@ public class Vista {
         JButton btnSoftware = crearBotonMenu("Gestion de software");
         JButton btnActualizarSoftware = crearBotonMenu("Actualizar software");
         JButton btnMantEquipo = crearBotonMenu("Mant. Equipos");
+        JButton btnHistorial = crearBotonMenu("Historial");
 
         sidebar.add(logo);
         sidebar.add(Box.createVerticalStrut(20));
@@ -78,6 +79,7 @@ public class Vista {
         sidebar.add(btnSoftware);
         sidebar.add(btnActualizarSoftware);
         sidebar.add(btnMantEquipo);
+        sidebar.add(btnHistorial);
 
         // Panel central donde se cargan las vistas
         mainPanel = new JPanel(new BorderLayout());
@@ -153,6 +155,9 @@ public class Vista {
         btnSoftware.addActionListener(e -> mostrarPanel(new VistaPanelSoftware()));
         btnActualizarSoftware.addActionListener(e -> mostrarPanel(new VistaPanelActualizacionSoftware()));
         btnMantEquipo.addActionListener(e -> mostrarPanel(new VistaPanelMantenimientoEquipo()));
+        btnHistorial.addActionListener(e -> mostrarPanel(new VistaPanelHistorial())
+        );
+
 
         // Aplicación de permisos según rol
         aplicarPermisos(
@@ -165,6 +170,8 @@ public class Vista {
                 btnSoftware,
                 btnActualizarSoftware,
                 btnMantEquipo,
+                btnHistorial,
+
                 titulo
         );
 
@@ -189,10 +196,11 @@ public class Vista {
             JButton btnSoftware,
             JButton btnActualizarSoftware,
             JButton btnMantEquipo,
+            JButton btnHistorial,
             JLabel titulo
     ) {
 
-        // PRIMERO: OCULTAMOS TODO
+// PRIMERO: OCULTAMOS TODO
         btnCamion.setVisible(false);
         btnConductor.setVisible(false);
         btnKM.setVisible(false);
@@ -202,6 +210,7 @@ public class Vista {
         btnSoftware.setVisible(false);
         btnActualizarSoftware.setVisible(false);
         btnMantEquipo.setVisible(false);
+        btnHistorial.setVisible(false);
 
         // LUEGO: ACTIVAMOS SEGÚN ROL
         switch (rol) {
@@ -240,14 +249,13 @@ public class Vista {
                 break;
 
             case "Tecnico mantenimiento oficina":
-                btnMantEquipo.setVisible(true);
-                titulo.setText("Panel de Mantenimiento de quipo");
-                mostrarPanel(new VistaPanelMantenimientoEquipo());
-                break;
 
-            default:
-                titulo.setText("Panel General");
-                mostrarPanel(new VistaPanelConductor());
+                btnMantEquipo.setVisible(true);
+                btnHistorial.setVisible(true);
+
+                titulo.setText("Panel de Mantenimiento de equipo");
+
+                mostrarPanel(new VistaPanelMantenimientoEquipo());
                 break;
         }
     }
